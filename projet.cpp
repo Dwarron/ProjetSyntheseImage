@@ -36,7 +36,7 @@ int main(int argc,char **argv)
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(800,800);
-	glutCreateWindow("cube");
+	glutCreateWindow("Dragon");
 
 	/* Initialisation d'OpenGL */
 	glClearColor(0.0,0.0,0.0,0.0);
@@ -72,7 +72,7 @@ void affichage()
 	glShadeModel(GL_SMOOTH);
 
 	glLoadIdentity();
-	glLookAt(0, 0, 0, 0, 0, 0, 0, 2, camZoom);	// TODO : check si ça marche
+	gluLookAt(0, 0, 0, 0, 0, 0, 0, 2, camZoom);	// TODO : check si ça marche
 
 	dessinDragon();
 
