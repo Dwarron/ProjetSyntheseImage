@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1634599606 source:/home/alexandre/Documents/SyntheseImage/projet.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdlib>
+	<GL/freeglut.h>
+	<cmath>
+
