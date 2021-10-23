@@ -1,8 +1,115 @@
 # depslib dependency file v1.0
-1634599606 source:/home/alexandre/Documents/SyntheseImage/projet.cpp
+1634996791 source:/home/alexandre/Documents/SyntheseImage/projet.cpp
 	<GLUT/glut.h>
 	<GL/glut.h>
+	<cstdio>
 	<cstdlib>
 	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	"Sphere.h"
+	<cmath>
+
+1634915288 source:/home/alexandre/Documents/SyntheseImage/texture.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+
+1634852689 /home/alexandre/Documents/SyntheseImage/texture.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+
+1634993473 source:/home/alexandre/Documents/SyntheseImage/Cylindre.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+	"Cylindre.h"
+
+1634919155 /home/alexandre/Documents/SyntheseImage/Cylindre.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+
+1634982444 /home/alexandre/Documents/SyntheseImage/Sphere.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+
+1634993876 source:/home/alexandre/Documents/SyntheseImage/Sphere.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+	"Sphere.h"
+
+1634993816 /home/alexandre/Documents/SyntheseImage/Sphere.h
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+
+1634993682 /home/alexandre/Documents/SyntheseImage/Cylindre.h
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+
+1634993452 source:/home/alexandre/Documents/SyntheseImage/Texture.cpp
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
+	<cmath>
+	"Texture.h"
+
+1634993434 /home/alexandre/Documents/SyntheseImage/Texture.h
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<cstdio>
+	<cstdlib>
+	<GL/freeglut.h>
+	<jpeglib.h>
+	<jerror.h>
 	<cmath>
 

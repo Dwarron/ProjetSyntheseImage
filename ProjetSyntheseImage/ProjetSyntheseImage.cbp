@@ -37,6 +37,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../Cylindre.cpp" />
+		<Unit filename="../Sphere.cpp" />
+		<Unit filename="../Sphere.h" />
+		<Unit filename="../Texture.cpp" />
 		<Unit filename="../projet.cpp" />
 		<Extensions />
 	</Project>
