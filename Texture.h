@@ -26,9 +26,12 @@
 /*class Texture*/
 class Texture{
     public:
+        Texture();
         Texture(char *fichier);
         unsigned char texture[256][256][3];
-        unsigned char image[256*256*3];
+
+        void activer();
+        void desactiver();
 
     private:
         void loadJpegImage(char *fichier);

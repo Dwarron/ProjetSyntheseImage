@@ -16,7 +16,7 @@
 #include <GL/freeglut.h>
 #include <jpeglib.h>
 #include <jerror.h>
-//#include "Texture.cpp"
+#include "Texture.h"
 //#include "Cylindre.cpp"
 #include "Sphere.h"
 
@@ -27,16 +27,21 @@
 #include <cmath>
 
 float camZoom = 20;
-float camSpeed = 1;
+float camZoomSpeed = 0.1;
+float camMoveSpeed = 0.3;
 char presse;
-int anglex,angley,x,y,xold,yold, mouveFireBall = 0;
+float anglex,angley,x,y,xold,yold, mouveFireBall = 0;
 float mouthAngle = 0.0, mouthSpeed = 0.02;
-//Texture *customTextures; //tableau de toutes les textures
+Texture customTextures[3]; //tableau de toutes les textures
+
+bool touchesPressees[6];
 
 /* Prototype des fonctions */
 void affichage();
-void clavier(unsigned char touche, int x, int y);
-void clavierSpecial(int touche, int x, int y);
+void clavierDown(unsigned char touche, int x, int y);
+void clavierUp(unsigned char touche, int x, int y);
+void clavierSpecialDown(int touche, int x, int y);
+void clavierSpecialUp(int touche, int x, int y);
 void reshape(int x, int y);
 void idle();
 void mouse(int bouton, int etat, int x, int y);
@@ -48,6 +53,8 @@ float dimTete = 2;
 
 void teteDragon()
 {
+    customTextures[0].activer();
+
 	glPushMatrix();
         glTranslated(4, 8, 0); //a determiné quand on aura le cout du dragon
 
@@ -121,6 +128,7 @@ void teteDragon()
         glPopMatrix();
 
     glPopMatrix();
+    customTextures[0].desactiver();
 }
 
 float LPiedAvant = 3;
@@ -290,13 +298,14 @@ int main(int argc,char **argv)
 	glEnable(GL_DEPTH_TEST);
 
     /* Chargement de la texture qui represente la tete du Dragon*/
-    //Texture teteDrago("./Ender_dragon_skinHead.jpg");
-    //customTextures[0] = teteDragon;
+    customTextures[0] = Texture("./Ender_dragon_skinHead.jpg");
 
 	/* enregistrement des fonctions de rappel */
 	glutDisplayFunc(affichage);
-	glutKeyboardFunc(clavier);
-	glutSpecialFunc(clavierSpecial);
+	glutKeyboardFunc(clavierDown);
+	glutKeyboardUpFunc(clavierUp);
+	glutSpecialFunc(clavierSpecialDown);
+	glutSpecialUpFunc(clavierSpecialUp);
 	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mousemotion);
@@ -309,6 +318,30 @@ int main(int argc,char **argv)
 
 void affichage()
 {
+    if(touchesPressees[0])
+    {
+        if(touchesPressees[1])  //Z
+            zoom(-1);
+        else                    //z
+            zoom(1);
+    }
+    if(touchesPressees[2])
+    {
+        anglex=anglex+camMoveSpeed;
+    }
+    if(touchesPressees[3])
+    {
+        anglex=anglex-camMoveSpeed;
+    }
+    if(touchesPressees[4])
+    {
+        angley=angley-camMoveSpeed;
+    }
+    if(touchesPressees[5])
+    {
+        angley=angley+camMoveSpeed;
+    }
+
 	/* effacement de l'image avec la couleur de fond */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glShadeModel(GL_SMOOTH);
@@ -319,17 +352,15 @@ void affichage()
     glRotatef(anglex,0.0,1.0,0.0);*/
 
     /* Parametrage du placage de textures */
-    /*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, customTextures[0].texture);// spécifier la texture avec l’image
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);// Comment la texture interagit avec la couleur du pixel
-    glEnable(GL_TEXTURE_2D);*/
 
     /* Chargement de la texture qui represente la crete du Dragon*/
     //loadJpegImage("./Ender_dragon_skinCrete.jpg");
 
     /* Parametrage du placage de textures */
-    /*glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);// Comment la texture interagit avec la couleur du pixel
+   /* glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);// Comment la texture interagit avec la couleur du pixel
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, image);// spécifier la texture avec l’image
     glEnable(GL_TEXTURE_2D);*/
 
@@ -398,7 +429,7 @@ void mouthAnim()
     glutPostRedisplay();
 }
 
-void clavier(unsigned char touche, int x, int y)
+void clavierDown(unsigned char touche, int x, int y)
 {
 	switch (touche)
 	{
@@ -428,39 +459,73 @@ void clavier(unsigned char touche, int x, int y)
 			glutPostRedisplay();
 			break;
 		case 'z': //zoomer sur le dragon
-			zoom(1);
-			break;
-		case 'Z': //dezoomer
-			zoom(-1);
+		case 'Z':
+            touchesPressees[0] = true;
 			break;
 		case 'q' : /*la touche 'q' permet de quitter le programme */
 			exit(0);
 	}
+    if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+        touchesPressees[1] = true;
+    else
+        touchesPressees[1] = false;
 }
 
-//méthode qui permet d'utiliser les touches special pour déplacer la caméra
-void clavierSpecial(int touche, int x, int y)
+void clavierUp(unsigned char touche, int x, int y)
+{
+	switch (touche)
+	{
+		case 'z': //zoomer sur le dragon
+		case 'Z':
+            touchesPressees[0] = false;
+			break;
+	}
+    if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+        touchesPressees[1] = true;
+    else
+        touchesPressees[1] = false;
+}
+
+//méthode qui permet d'utiliser les touches special pour deplacer la caméra
+void clavierSpecialDown(int touche, int x, int y)
 {
 	switch (touche)
 	{
         case GLUT_KEY_LEFT: //Deplacer la cam a droite
-            anglex=anglex+1;
-            glutPostRedisplay();;
+            touchesPressees[2] = true;
 			break;
         case GLUT_KEY_RIGHT: //Deplacer la cam a gauche
-            anglex=anglex-1;
-            glutPostRedisplay();;
+            touchesPressees[3] = true;
 			break;
         case GLUT_KEY_UP: //Deplacer la cam par le bas
-            angley=angley-1;
-            glutPostRedisplay();;
+            touchesPressees[4] = true;
 			break;
         case GLUT_KEY_DOWN: //Deplacer la cam par le haut
-            angley=angley+1;
-            glutPostRedisplay();;
+            touchesPressees[5] = true;
 			break;
-		case 'q' : /*la touche 'q' permet de quitter le programme */
-			exit(0);
+	}
+    if(glutGetModifiers() & GLUT_ACTIVE_SHIFT)
+        touchesPressees[1] = true;
+    else
+        touchesPressees[1] = false;
+}
+
+void clavierSpecialUp(int touche, int x, int y)
+{
+	switch (touche)
+	{
+        case GLUT_KEY_LEFT: //Deplacer la cam a droite
+            touchesPressees[2] = false;
+			break;
+        case GLUT_KEY_RIGHT: //Deplacer la cam a gauche
+            touchesPressees[3] = false;
+			break;
+        case GLUT_KEY_UP: //Deplacer la cam par le bas
+            touchesPressees[4] = false;
+			break;
+        case GLUT_KEY_DOWN: //Deplacer la cam par le haut
+            touchesPressees[5] = false;
+			break;
 	}
 }
 
@@ -504,5 +569,5 @@ void mousemotion(int x,int y)
 
 void zoom(int signe)
 {
-	camZoom += signe * camSpeed;
+	camZoom += signe * camZoomSpeed;
 }
