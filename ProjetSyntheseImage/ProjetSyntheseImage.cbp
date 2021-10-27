@@ -44,9 +44,11 @@
 			<Add library="jpeg" />
 		</Linker>
 		<Unit filename="../Cylindre.cpp" />
+		<Unit filename="../Cylindre.h" />
 		<Unit filename="../Sphere.cpp" />
 		<Unit filename="../Sphere.h" />
 		<Unit filename="../Texture.cpp" />
+		<Unit filename="../Texture.h" />
 		<Unit filename="../projet.cpp" />
 		<Extensions>
 			<code_completion />
