@@ -49,21 +49,104 @@ void mousemotion(int x, int y);
 void zoom(int signe);
 void mouthAnim();
 
+float largeurCorp = 4;
+float longueurCorp = 10;
+float longueurHauteurCorp = 5;
+
+float decalageHauteurAiles = 1;
+float largeurAiles = 30;
+float longueurAiles = 10;
+
+void ailes()
+{
+    glPushMatrix();
+        glTranslatef(0, longueurHauteurCorp - decalageHauteurAiles, 0);
+
+        //aile droite
+        glPushMatrix();
+        glColor3f(0, 0, 1);
+        glTranslatef(largeurCorp*0.5, 0, 0);
+
+        //partie souple
+        glBegin(GL_POLYGON);
+            glVertex3f(0, 0, 0);
+            glVertex3f(largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
+            glVertex3f(largeurAiles*3.0/5.0, 0, -longueurAiles);
+            glVertex3f(largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
+            glVertex3f(largeurAiles, 0, 0);
+        glEnd();
+
+        //armature
+        glPushMatrix();
+        glColor3f(0.2, 0.2, 0.2);
+            glTranslatef(largeurAiles * 0.25, 0, 0);
+            glScalef(largeurAiles * 0.5, 1, 1);
+            glPushMatrix();
+                glutSolidCube(1);
+
+                glTranslatef(1, 0, 0);
+                glPushMatrix();
+                    glScalef(1, 0.5, 0.5);
+                    glutSolidCube(1);
+                glPopMatrix();
+            glPopMatrix();
+
+        glPopMatrix();
+
+        glPopMatrix();
+
+        //aile gauche
+        glPushMatrix();
+        glTranslatef(-largeurCorp*0.5, 0, 0);
+
+        glColor3f(0, 0, 1);
+
+        //partie souple
+        glBegin(GL_POLYGON);
+            glVertex3f(0, 0, 0);
+            glVertex3f(-largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
+            glVertex3f(-largeurAiles*3.0/5.0, 0, -longueurAiles);
+            glVertex3f(-largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
+            glVertex3f(-largeurAiles, 0, 0);
+        glEnd();
+
+        //armature
+        glPushMatrix();
+        glColor3f(0.2, 0.2, 0.2);
+            glTranslatef(-largeurAiles * 0.25, 0, 0);
+            glScalef(largeurAiles * 0.5, 1, 1);
+            glPushMatrix();
+                glutSolidCube(1);
+
+                glTranslatef(-1, 0, 0);
+                glPushMatrix();
+                    glScalef(1, 0.5, 0.5);
+                    glutSolidCube(1);
+                glPopMatrix();
+            glPopMatrix();
+        glPopMatrix();
+
+        glPopMatrix();
+
+    glPopMatrix();
+}
+
 float dimTete = 2;
 
-void teteDragon()
+void tete()
 {
-    customTextures[0].activer();
+    customTextures[0].activer();    //texture tete
 
 	glPushMatrix();
-        glTranslated(0, 8, 4); //a determiné quand on aura le cout du dragon
+        glTranslated(0, longueurHauteurCorp + dimTete / 2.0, 4); //a determiné quand on aura le cout du dragon
 
+        float longueurCubeTete = dimTete / 2.0;
         //texture qui va etre appliquer sur la tete du dragon pour avoir la tete noir et les yeux violet
         glBegin(GL_POLYGON);
-        glTexCoord2f(0.0,0.0);   glVertex3f(1, 1, 1);
-        glTexCoord2f(0.0,1.0);   glVertex3f(1,-1, 1);
-        glTexCoord2f(1.0,1.0);   glVertex3f(-1,-1, 1);
-        glTexCoord2f(1.0,0.0);   glVertex3f(-1, 1, 1);
+        glTexCoord2f(0.0,0.0);   glVertex3f(longueurCubeTete, longueurCubeTete, longueurCubeTete);
+        glTexCoord2f(0.0,1.0);   glVertex3f(longueurCubeTete,-longueurCubeTete, longueurCubeTete);
+        glTexCoord2f(1.0,1.0);   glVertex3f(-longueurCubeTete,-longueurCubeTete, longueurCubeTete);
+        glTexCoord2f(1.0,0.0);   glVertex3f(-longueurCubeTete, longueurCubeTete, longueurCubeTete);
         glEnd();
 
         //tete du dragon
@@ -95,137 +178,225 @@ void teteDragon()
             glPopMatrix();
         glPopMatrix();
 
-        //Crete crane gauche
         glPushMatrix();
-        glColor3f(1,0,1);
-        glTranslated(-dimTete/4.0, dimTete - dimTete/3.0, 0);
-        glScalef(dimTete/8.0, dimTete/3.0, dimTete/2.0);
-        glutSolidCube(1);
-        glPopMatrix();
-
+            glTranslated(0, dimTete - dimTete/3.0, 0);
+            glScalef(dimTete/8.0, dimTete/3.0, dimTete/2.0);
+            //Crete crane gauche
+            glPushMatrix();
+                glColor3f(1,0,1);
+                glTranslated(-dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
         //Crete crane droite
-        glPushMatrix();
-        glColor3f(0.15,0,0.15);
-        glTranslated(dimTete/4.0, dimTete - dimTete/3.0, 0);
-        glScalef(dimTete/8.0, dimTete/3.0, dimTete/2.0);
-        glutSolidCube(1);
+            glPushMatrix();
+                glColor3f(1,0,1);
+                glTranslated(dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
         glPopMatrix();
 
-        //Crete museau gauche
         glPushMatrix();
-        glColor3f(1,0,0);
-        glTranslated(-dimTete/6.0, dimTete/12.0 , dimTete);
-        glScalef(dimTete/8.0, dimTete/8.0, dimTete/2.0);
-        glutSolidCube(1);
-        glPopMatrix();
+            glTranslated(0, dimTete/12.0 , dimTete);
+            glScalef(dimTete/8.0, dimTete/8.0, dimTete/2.0);
+            glColor3f(1,0,0);
 
-        //Crete museau droite
-        glPushMatrix();
-        glColor3f(1,0,0);
-        glTranslated(dimTete/6.0, dimTete/12.0 , dimTete);
-        glScalef(dimTete/6.0, dimTete/8.0, dimTete/2.0);
-        glutSolidCube(1);
+            //Crete museau gauche
+            glPushMatrix();
+                glTranslated(-dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            //Crete museau droite
+            glPushMatrix();
+                glTranslated(dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
         glPopMatrix();
 
     glPopMatrix();
     customTextures[0].desactiver();
 }
 
-float CorpDragon = 8;
+float avancementJambesArrieres = 2;
+float hauteurJambesArrieres = longueurHauteurCorp - 1;
+float largeurJambesArrieres = 1.5;
+float longueurCuissesArrieres = 5;
+float angleCuissesArrieres = 55;
+float angleMolletsArrieres = -100;
+float longueurMolletsArrieres = 3;
+float largeurPiedsArrieres = 3;
+float longueurPiedsArrieres = 4;
+float hauteurPiedsArrieres = 1;
 
+float avancementJambesAvants = 2;
+float hauteurJambesAvants = longueurHauteurCorp - 1.5;
+float largeurJambesAvants = 1;
+float longueurCuissesAvants = 3;
+float longueurMolletsAvants = 5;
+float angleCuissesAvants = 135;
+float angleMolletsAvants = 90;
+float largeurPiedsAvants = largeurJambesAvants;
+float longueurPiedsAvants = 2;
+float hauteurPiedsAvants = 0.75;
 
-void JambeEtCorpDragon()
+void jambes()
+{
+    //arriere
+    glPushMatrix();
+        glTranslatef(0, hauteurJambesArrieres, -longueurCorp / 2.0 + avancementJambesArrieres);
+
+        //droite
+        glPushMatrix();
+            //cuisse
+            glTranslatef(largeurCorp/2.0 + largeurJambesArrieres / 2.0, -longueurCuissesArrieres/2.0, 0);
+            glRotatef(angleCuissesArrieres, 1, 0, 0);
+            glPushMatrix();
+                glScalef(largeurJambesArrieres, largeurJambesArrieres, longueurCuissesArrieres);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            glPushMatrix();
+                //mollet
+                glTranslatef(0, 0, longueurCuissesArrieres / 2.0);
+                glRotatef(angleMolletsArrieres, 1, 0, 0);
+
+                glPushMatrix();
+                    glScalef(largeurJambesArrieres, largeurJambesArrieres, longueurMolletsArrieres);
+                    glTranslatef(0, 0, -0.5);
+                    glutSolidCube(1);
+                glPopMatrix();
+
+                glTranslatef(0, 0, -longueurMolletsArrieres);
+                glRotatef(-angleMolletsArrieres - angleCuissesArrieres, 1, 0, 0);
+                glTranslatef(0, -hauteurPiedsArrieres / 2.0, longueurPiedsArrieres / 2.0);
+                glScalef(largeurPiedsArrieres, hauteurPiedsArrieres, longueurPiedsArrieres);
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+        //gauche
+        glPushMatrix();
+            //cuisse
+            glTranslatef(-largeurCorp/2.0 - largeurJambesArrieres / 2.0, -longueurCuissesArrieres/2.0, 0);
+            glRotatef(angleCuissesArrieres, 1, 0, 0);
+            glPushMatrix();
+                glScalef(largeurJambesArrieres, largeurJambesArrieres, longueurCuissesArrieres);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            glPushMatrix();
+                //mollet
+                glTranslatef(0, 0, longueurCuissesArrieres / 2.0);
+                glRotatef(angleMolletsArrieres, 1, 0, 0);
+
+                glPushMatrix();
+                    glScalef(largeurJambesArrieres, largeurJambesArrieres, longueurMolletsArrieres);
+                    glTranslatef(0, 0, -0.5);
+                    glutSolidCube(1);
+                glPopMatrix();
+
+                glTranslatef(0, 0, -longueurMolletsArrieres);
+                glRotatef(-angleMolletsArrieres - angleCuissesArrieres, 1, 0, 0);
+                glTranslatef(0, -hauteurPiedsArrieres / 2.0, longueurPiedsArrieres / 2.0);
+                glScalef(largeurPiedsArrieres, hauteurPiedsArrieres, longueurPiedsArrieres);
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+    glPopMatrix();
+
+    //avant
+    glPushMatrix();
+        glTranslatef(0, hauteurJambesAvants, longueurCorp / 2.0 - avancementJambesAvants);
+
+        //droite
+        glPushMatrix();
+            //cuisse
+            glTranslatef(largeurCorp/2.0 + largeurJambesAvants / 2.0, -longueurCuissesAvants/2.0, 0);
+            glRotatef(angleCuissesAvants, 1, 0, 0);
+            glPushMatrix();
+                glScalef(largeurJambesAvants, largeurJambesAvants, longueurCuissesAvants);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            glPushMatrix();
+                //mollet
+                glTranslatef(0, 0, longueurCuissesAvants / 2.0);
+                glRotatef(angleMolletsAvants, 1, 0, 0);
+
+                glPushMatrix();
+                    glScalef(largeurJambesAvants, largeurJambesAvants, longueurMolletsAvants);
+                    glTranslatef(0, 0, -0.5);
+                    glutSolidCube(1);
+                glPopMatrix();
+
+                glTranslatef(0, 0, -longueurMolletsAvants);
+                glRotatef(-angleMolletsAvants - angleCuissesAvants, 1, 0, 0);
+                glTranslatef(0, -hauteurPiedsAvants / 2.0, longueurPiedsAvants / 2.0);
+                glScalef(largeurPiedsAvants, hauteurPiedsAvants, longueurPiedsAvants);
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+        //gauche
+        glPushMatrix();
+            //cuisse
+            glTranslatef(-largeurCorp/2.0 - largeurJambesAvants / 2.0, -longueurCuissesAvants/2.0, 0);
+            glRotatef(angleCuissesAvants, 1, 0, 0);
+            glPushMatrix();
+                glScalef(largeurJambesAvants, largeurJambesAvants, longueurCuissesAvants);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            glPushMatrix();
+                //mollet
+                glTranslatef(0, 0, longueurCuissesAvants / 2.0);
+                glRotatef(angleMolletsAvants, 1, 0, 0);
+
+                glPushMatrix();
+                    glScalef(largeurJambesAvants, largeurJambesAvants, longueurMolletsAvants);
+                    glTranslatef(0, 0, -0.5);
+                    glutSolidCube(1);
+                glPopMatrix();
+
+                glTranslatef(0, 0, -longueurMolletsAvants);
+                glRotatef(-angleMolletsAvants - angleCuissesAvants, 1, 0, 0);
+                glTranslatef(0, -hauteurPiedsAvants / 2.0, longueurPiedsAvants / 2.0);
+                glScalef(largeurPiedsAvants, hauteurPiedsAvants, longueurPiedsAvants);
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+    glPopMatrix();
+
+}
+
+void dragon()
 {
     glPushMatrix();
 
     //buste du dragon
     glPushMatrix();
-    glColor3f(1,0.8,0);
-    glTranslated(0, 2, 0);
-    glScalef(CorpDragon, CorpDragon/2.0, CorpDragon*3);
-    glutSolidCube(1);
+        glColor3f(1,0.8,0);
+        glTranslated(0, 2, 0);
+        glScalef(largeurCorp, longueurHauteurCorp, longueurCorp);
+        glutSolidCube(1);
     glPopMatrix();
 
-
-    glPopMatrix();
-}
-
-float largeurAiles = 30;
-float longueurAiles = 10;
-
-void ailesDragon()
-{
-    glPushMatrix();
-        glTranslatef(0, CorpDragon, 0);
-
-        //aile droite
-        glPushMatrix();
-        glTranslatef(CorpDragon*0.5, 0, 0);
-
-        //partie souple
-        glBegin(GL_POLYGON);
-            glVertex3f(0, 0, 0);
-            glVertex3f(largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
-            glVertex3f(largeurAiles*3.0/5.0, 0, -longueurAiles);
-            glVertex3f(largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
-            glVertex3f(largeurAiles, 0, 0);
-        glEnd();
-
-        //armature
-        glPushMatrix();
-        glColor3f(0.2, 0.2, 0.2);
-            glTranslatef(largeurAiles * 0.25, 0, 0);
-            glPushMatrix();
-                glScalef(largeurAiles * 0.5, 1, 1);
-                glutSolidCube(1);
-            glPopMatrix();
-
-            glTranslatef(largeurAiles * 0.5, 0, 0);
-            glPushMatrix();
-                glScalef(largeurAiles * 0.5, 0.5, 0.5);
-                glutSolidCube(1);
-            glPopMatrix();
-        glPopMatrix();
-
-        glPopMatrix();
-
-        //aile gauche
-        glPushMatrix();
-        glTranslatef(-CorpDragon*0.5, 0, 0);
-
-        glColor3f(0, 0, 1);
-
-        //partie souple
-        glBegin(GL_POLYGON);
-            glVertex3f(0, 0, 0);
-            glVertex3f(-largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
-            glVertex3f(-largeurAiles*3.0/5.0, 0, -longueurAiles);
-            glVertex3f(-largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
-            glVertex3f(-largeurAiles, 0, 0);
-        glEnd();
-
-        //armature
-        glPushMatrix();
-        glColor3f(0.2, 0.2, 0.2);
-            glTranslatef(-largeurAiles * 0.25, 0, 0);
-            glPushMatrix();
-            glScalef(-largeurAiles * 0.5, 1, 1);
-            glutSolidCube(1);
-            glPopMatrix();
-
-            glTranslatef(-largeurAiles * 0.5, 0, 0);
-            glPushMatrix();
-            glScalef(-largeurAiles * 0.5, 0.5, 0.5);
-            glutSolidCube(1);
-            glPopMatrix();
-        glPopMatrix();
-
-        glPopMatrix();
+    tete();
+    ailes();
+    jambes();
 
     glPopMatrix();
 }
 
-void Solar()
+void soleil()
 {
     glColor3f(0.8,0.6,0); //en attendant de mettre une texture de soleil, le soleil est jaune
     glTranslated(10, 20 , 10);
@@ -242,7 +413,7 @@ int main(int argc,char **argv)
 	glutCreateWindow("Dragon");
 
 	/* Initialisation d'OpenGL */
-	glClearColor(0.0,0.0,0.0,0.0);
+	glClearColor(0.5,0.5,0.5,0.0);
 	glColor3f(1.0,1.0,1.0);
 	glPointSize(2.0);
 	glEnable(GL_DEPTH_TEST);
@@ -314,12 +485,8 @@ void affichage()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, image);// spécifier la texture avec l’image
     glEnable(GL_TEXTURE_2D);*/
 
-    teteDragon();
-    JambeEtCorpDragon();
-    ailesDragon();
-    Solar();
-
-    //Cylindre test(10, 1, 0);
+    dragon();
+    soleil();
 
     glLoadIdentity();
     glOrtho(camZoom,-camZoom,-0.4 * camZoom, 1.6 * camZoom ,-camZoom,camZoom);
@@ -372,7 +539,7 @@ void affichage()
 
 void mouthAnim()
 {
-    mouthAngle -= mouthSpeed;
+    mouthAngle += mouthSpeed;
 
     if(mouthAngle >= 30 || mouthAngle <= 0)
         mouthSpeed = mouthSpeed * -1;
