@@ -18,7 +18,6 @@
 #include <jerror.h>
 #include "Texture.h"
 //#include "Cylindre.cpp"
-#include "Sphere.h"
 
 #ifdef __WIN32
 #pragma comment (lib, "jpeg.lib")
@@ -138,30 +137,30 @@ void tete()
     customTextures[0].activer();    //texture tete
 
 	glPushMatrix();
-        glTranslated(0, longueurHauteurCorp + dimTete / 2.0, 4); //a determiné quand on aura le cout du dragon
+        glTranslated(0, 0, dimTete / 2.0);
 
         float longueurCubeTete = dimTete / 2.0;
         //texture qui va etre appliquer sur la tete du dragon pour avoir la tete noir et les yeux violet
         glBegin(GL_POLYGON);
-        glTexCoord2f(0.0,0.0);   glVertex3f(longueurCubeTete, longueurCubeTete, longueurCubeTete);
-        glTexCoord2f(0.0,1.0);   glVertex3f(longueurCubeTete,-longueurCubeTete, longueurCubeTete);
-        glTexCoord2f(1.0,1.0);   glVertex3f(-longueurCubeTete,-longueurCubeTete, longueurCubeTete);
-        glTexCoord2f(1.0,0.0);   glVertex3f(-longueurCubeTete, longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(0.0,0.0);   glVertex3f(longueurCubeTete, longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(0.0,1.0);   glVertex3f(longueurCubeTete,-longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(1.0,1.0);   glVertex3f(-longueurCubeTete,-longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(1.0,0.0);   glVertex3f(-longueurCubeTete, longueurCubeTete, longueurCubeTete);
         glEnd();
 
         //tete du dragon
         glPushMatrix();
-        glColor3f(0.5,0.5,0);
-        glScalef(dimTete, dimTete, dimTete);
-        glutSolidCube(1);
+            glColor3f(0.5,0.5,0);
+            glScalef(dimTete, dimTete, dimTete);
+            glutSolidCube(1);
         glPopMatrix();
 
         //machoire superieur
         glPushMatrix();
-        glColor3f(0,0,0.9);
-        glTranslated(0, -dimTete/12.0, dimTete);
-        glScalef(dimTete/1.2, dimTete/4.0, dimTete);
-        glutSolidCube(1);
+            glColor3f(0,0,0.9);
+            glTranslated(0, -dimTete/12.0, dimTete);
+            glScalef(dimTete/1.2, dimTete/4.0, dimTete);
+            glutSolidCube(1);
         glPopMatrix();
 
         //machoire inferieur
@@ -171,10 +170,10 @@ void tete()
             glTranslated(0, dimTete/3.0, -dimTete/2.0);
 
             glPushMatrix();
-            glColor3f(0,0.8,0);
-            glTranslated(0, -dimTete/3.0, dimTete - dimTete/16.0);
-            glScalef(dimTete/1.2, dimTete/4.0, dimTete + dimTete/8.0); // plus grand que la machoire superieur afin d'avoir une animation plus propre
-            glutSolidCube(1);
+                glColor3f(0,0.8,0);
+                glTranslated(0, -dimTete/3.0, dimTete - dimTete/16.0);
+                glScalef(dimTete/1.2, dimTete/4.0, dimTete + dimTete/8.0); // plus grand que la machoire superieur afin d'avoir une animation plus propre
+                glutSolidCube(1);
             glPopMatrix();
         glPopMatrix();
 
@@ -374,7 +373,45 @@ void jambes()
         glPopMatrix();
 
     glPopMatrix();
+}
 
+int divisionsQueue = 5;
+float hauteurQueue = 2;
+float longueurQueue = 10;
+float rayonQueue = 0.75;
+int divisionsCou = 5;
+float hauteurCou = 4;
+float longueurCou = 5;
+float rayonCou = 0.5;
+
+void queueEtCou()
+{
+    //queue
+    glPushMatrix();
+        glTranslatef(0, hauteurQueue, -longueurCorp/2.0);
+        glRotatef(180, 0, 1, 0);
+
+        float longueurDivision = longueurQueue / (float)divisionsQueue;
+        for(int i = 0; i < divisionsQueue; i++)
+        {
+            glutSolidCylinder(rayonQueue, longueurDivision, 32, 32);
+            glTranslatef(0, 0, longueurDivision);
+        }
+    glPopMatrix();
+
+    //cou
+    glPushMatrix();
+        glTranslatef(0, hauteurCou, longueurCorp/2.0);
+
+        longueurDivision = longueurCou / (float)divisionsCou;
+        for(int i = 0; i < divisionsCou; i++)
+        {
+            glutSolidCylinder(rayonCou, longueurDivision, 32, 32);
+            glTranslatef(0, 0, longueurDivision);
+        }
+
+        tete();
+    glPopMatrix();
 }
 
 void dragon()
@@ -389,18 +426,11 @@ void dragon()
         glutSolidCube(1);
     glPopMatrix();
 
-    tete();
     ailes();
     jambes();
+    queueEtCou();
 
     glPopMatrix();
-}
-
-void soleil()
-{
-    glColor3f(0.8,0.6,0); //en attendant de mettre une texture de soleil, le soleil est jaune
-    glTranslated(10, 20 , 10);
-    Sphere test2(40,20,5);
 }
 
 int main(int argc,char **argv)
@@ -486,7 +516,6 @@ void affichage()
     glEnable(GL_TEXTURE_2D);*/
 
     dragon();
-    soleil();
 
     glLoadIdentity();
     glOrtho(camZoom,-camZoom,-0.4 * camZoom, 1.6 * camZoom ,-camZoom,camZoom);
