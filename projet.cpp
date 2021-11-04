@@ -18,6 +18,7 @@
 #include <jerror.h>
 #include "Texture.h"
 //#include "Cylindre.cpp"
+#include "Sphere.h"
 
 #ifdef __WIN32
 #pragma comment (lib, "jpeg.lib")
@@ -29,8 +30,22 @@ float camZoom = 20;
 float camZoomSpeed = 0.1;
 float camMoveSpeed = 0.3;
 char presse;
-float anglex,angley,x,y,xold,yold, mouveFireBall = 0;
-float mouthAngle = 0.0, mouthSpeed = 0.02;
+float anglex,angley,x,y,xold,yold;
+float mouthAngleFireBall;
+float mouthMaxAngleFireBall = 30;
+float ailesAngle = 0;
+float ailesSpeed = 0.05;
+float maxAilesAngle = 15;
+float minAilesAngle = -15;
+
+bool animFireBall;
+int startTimeAnimFireBall;
+float animFireBallDuration = 8;
+float fireBallRadius = 1;
+float avancementFireBall = 0;
+bool spawnFireBall = false;
+float speedFireBall = 0.1;
+
 Texture customTextures[3]; //tableau de toutes les textures
 
 bool touchesPressees[6];
@@ -46,7 +61,7 @@ void idle();
 void mouse(int bouton, int etat, int x, int y);
 void mousemotion(int x, int y);
 void zoom(int signe);
-void mouthAnim();
+void anim();
 
 float largeurCorp = 4;
 float longueurCorp = 10;
@@ -63,67 +78,69 @@ void ailes()
 
         //aile droite
         glPushMatrix();
-        glColor3f(0, 0, 1);
-        glTranslatef(largeurCorp*0.5, 0, 0);
+            glRotatef(ailesAngle, 0, 0, 1);
+            glColor3f(0, 0, 1);
+            glTranslatef(largeurCorp*0.5, 0, 0);
 
-        //partie souple
-        glBegin(GL_POLYGON);
-            glVertex3f(0, 0, 0);
-            glVertex3f(largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
-            glVertex3f(largeurAiles*3.0/5.0, 0, -longueurAiles);
-            glVertex3f(largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
-            glVertex3f(largeurAiles, 0, 0);
-        glEnd();
+            //partie souple
+            glBegin(GL_POLYGON);
+                glVertex3f(0, 0, 0);
+                glVertex3f(largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
+                glVertex3f(largeurAiles*3.0/5.0, 0, -longueurAiles);
+                glVertex3f(largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
+                glVertex3f(largeurAiles, 0, 0);
+            glEnd();
 
-        //armature
-        glPushMatrix();
-        glColor3f(0.2, 0.2, 0.2);
-            glTranslatef(largeurAiles * 0.25, 0, 0);
-            glScalef(largeurAiles * 0.5, 1, 1);
+            //armature
             glPushMatrix();
-                glutSolidCube(1);
-
-                glTranslatef(1, 0, 0);
+                glColor3f(0.2, 0.2, 0.2);
+                glTranslatef(largeurAiles * 0.25, 0, 0);
+                glScalef(largeurAiles * 0.5, 1, 1);
                 glPushMatrix();
-                    glScalef(1, 0.5, 0.5);
                     glutSolidCube(1);
-                glPopMatrix();
-            glPopMatrix();
 
-        glPopMatrix();
+                    glTranslatef(1, 0, 0);
+                    glPushMatrix();
+                        glScalef(1, 0.5, 0.5);
+                        glutSolidCube(1);
+                    glPopMatrix();
+                glPopMatrix();
+
+            glPopMatrix();
 
         glPopMatrix();
 
         //aile gauche
         glPushMatrix();
-        glTranslatef(-largeurCorp*0.5, 0, 0);
+            glTranslatef(-largeurCorp*0.5, 0, 0);
+            glRotatef(-ailesAngle, 0, 0, 1);
 
-        glColor3f(0, 0, 1);
+            glColor3f(0, 0, 1);
 
-        //partie souple
-        glBegin(GL_POLYGON);
-            glVertex3f(0, 0, 0);
-            glVertex3f(-largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
-            glVertex3f(-largeurAiles*3.0/5.0, 0, -longueurAiles);
-            glVertex3f(-largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
-            glVertex3f(-largeurAiles, 0, 0);
-        glEnd();
+            //partie souple
+            glBegin(GL_POLYGON);
+                glVertex3f(0, 0, 0);
+                glVertex3f(-largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
+                glVertex3f(-largeurAiles*3.0/5.0, 0, -longueurAiles);
+                glVertex3f(-largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
+                glVertex3f(-largeurAiles, 0, 0);
+            glEnd();
 
-        //armature
-        glPushMatrix();
-        glColor3f(0.2, 0.2, 0.2);
-            glTranslatef(-largeurAiles * 0.25, 0, 0);
-            glScalef(largeurAiles * 0.5, 1, 1);
+            //armature
             glPushMatrix();
-                glutSolidCube(1);
-
-                glTranslatef(-1, 0, 0);
+                glColor3f(0.2, 0.2, 0.2);
+                glTranslatef(-largeurAiles * 0.25, 0, 0);
+                glScalef(largeurAiles * 0.5, 1, 1);
                 glPushMatrix();
-                    glScalef(1, 0.5, 0.5);
                     glutSolidCube(1);
+
+                    glTranslatef(-1, 0, 0);
+                    glPushMatrix();
+                        glScalef(1, 0.5, 0.5);
+                        glutSolidCube(1);
+                    glPopMatrix();
                 glPopMatrix();
             glPopMatrix();
-        glPopMatrix();
 
         glPopMatrix();
 
@@ -165,8 +182,8 @@ void tete()
 
         //machoire inferieur
         glPushMatrix();
-            glTranslated(0, -dimTete/3.0, dimTete/2.0);
-            glRotatef(mouthAngle, 1, 0, 0);
+            glTranslated(0, -dimTete/3.0, dimTete/2.0);     //pivot relatif au bout de la tete
+            glRotatef(mouthAngleFireBall, 1, 0, 0);
             glTranslated(0, dimTete/3.0, -dimTete/2.0);
 
             glPushMatrix();
@@ -175,7 +192,22 @@ void tete()
                 glScalef(dimTete/1.2, dimTete/4.0, dimTete + dimTete/8.0); // plus grand que la machoire superieur afin d'avoir une animation plus propre
                 glutSolidCube(1);
             glPopMatrix();
+
         glPopMatrix();
+
+        if(spawnFireBall)
+        {
+            glPushMatrix();
+                glTranslated(0, -dimTete/3.0, dimTete/2.0);     //pivot relatif au bout de la tete
+                glRotatef(mouthAngleFireBall / 2.0, 1, 0, 0);
+                glTranslated(0, dimTete/3.0, -dimTete/2.0);
+                glTranslatef(0, 0, dimTete / 2.0 + fireBallRadius);
+                glColor3f(1, 0, 0);                 //todo : wrap texture boule de feu sur la sphere
+                glTranslatef(0, 0, avancementFireBall);
+
+                Sphere s(40, 20, fireBallRadius);
+            glPopMatrix();
+        }
 
         glPushMatrix();
             glTranslated(0, dimTete - dimTete/3.0, 0);
@@ -460,7 +492,7 @@ int main(int argc,char **argv)
 	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mousemotion);
-	glutIdleFunc(mouthAnim);
+	glutIdleFunc(anim);
 
 	/* Entree dans la boucle principale glut */
 	glutMainLoop();
@@ -566,12 +598,42 @@ void affichage()
 	glutSwapBuffers();
 }
 
-void mouthAnim()
+void startAnimFireBall()
 {
-    mouthAngle += mouthSpeed;
+    animFireBall = true;
+    spawnFireBall = false;
+    avancementFireBall = 0;
+    startTimeAnimFireBall = glutGet(GLUT_ELAPSED_TIME);
+}
 
-    if(mouthAngle >= 30 || mouthAngle <= 0)
-        mouthSpeed = mouthSpeed * -1;
+void anim()
+{
+    if(animFireBall)
+    {
+        float animTime = (glutGet(GLUT_ELAPSED_TIME) - startTimeAnimFireBall) / animFireBallDuration / 1000.0;
+
+        if(animTime <= 0.33)
+        {
+            mouthAngleFireBall = mouthMaxAngleFireBall * (animTime * 3);
+        }
+        else
+        {
+            spawnFireBall = true;
+            avancementFireBall += speedFireBall;
+
+            if(animTime <= 0.67)
+            {
+                mouthAngleFireBall = (mouthMaxAngleFireBall * 2 / 3.0 - mouthMaxAngleFireBall * animTime) * 3;
+            }
+        }
+
+        if(animTime >= 1)
+            animFireBall = false;
+    }
+
+    ailesAngle += ailesSpeed;
+    if(ailesAngle >= maxAilesAngle || ailesAngle <= minAilesAngle)
+        ailesSpeed *= -1;
 
     glutPostRedisplay();
 }
@@ -604,6 +666,9 @@ void clavierDown(unsigned char touche, int x, int y)
 			glPolygonMode(GL_FRONT,GL_FILL);
 			glPolygonMode(GL_FRONT,GL_LINE);
 			glutPostRedisplay();
+			break;
+        case 'b':
+			startAnimFireBall();
 			break;
 		case 'z': //zoomer sur le dragon
 		case 'Z':
