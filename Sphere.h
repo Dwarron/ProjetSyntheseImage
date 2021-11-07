@@ -22,12 +22,10 @@
 #endif
 
 #include <cmath>
+#define PI 3.1415926
 
 /*class Sphere*/
 class Sphere{
     public:
         Sphere(int NP, int NM, float r);
-
-    private:
-        float pi = 3.1415926;
 };

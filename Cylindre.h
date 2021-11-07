@@ -21,13 +21,10 @@
 #pragma comment (lib, "jpeg.lib")
 #endif
 
-#include <cmath>
+#define PI 3.1415926
 
 /*class Cylindre*/
 class Cylindre{
     public:
-        Cylindre(int n, float r, int subd); //subd == subdivision
-
-    private:
-        float pi = 3.1415926;
+        Cylindre(float r, float h, int subd); //subd == subdivision
 };

@@ -32,8 +32,8 @@ Sphere::Sphere(int NP, int NM, float r)
     for(int i = 0; i < NP; i++)
         for(int j = 0; j < NM; j++)
         {
-            float o = 2*pi*j/float(NM);
-            float p = -pi/2.0+pi*i/float(NP);
+            float o = 2*PI*j/float(NM);
+            float p = -PI/2.0+PI*i/float(NP);
 
             coords[j+i*NM][0] = cos(o) * cos(p) * r;
             coords[j+i*NM][1] = sin(o) * cos(p) * r;
@@ -55,10 +55,10 @@ Sphere::Sphere(int NP, int NM, float r)
     for(int i = 0; i < (NP-1) * NM; i++)
     {
         glBegin(GL_POLYGON);
-            glVertex3f(coords[faces[i][0]][0], coords[faces[i][0]][1], coords[faces[i][0]][2]);
-            glVertex3f(coords[faces[i][1]][0], coords[faces[i][1]][1], coords[faces[i][1]][2]);
-            glVertex3f(coords[faces[i][2]][0], coords[faces[i][2]][1], coords[faces[i][2]][2]);
-            glVertex3f(coords[faces[i][3]][0], coords[faces[i][3]][1], coords[faces[i][3]][2]);
+            glTexCoord2f(coords[faces[i][0]][0] / (2*r) + 0.5, coords[faces[i][0]][1] / (2*r) + 0.5);   glVertex3f(coords[faces[i][0]][0], coords[faces[i][0]][1], coords[faces[i][0]][2]);
+            glTexCoord2f(coords[faces[i][1]][0] / (2*r) + 0.5, coords[faces[i][1]][1] / (2*r) + 0.5);   glVertex3f(coords[faces[i][1]][0], coords[faces[i][1]][1], coords[faces[i][1]][2]);
+            glTexCoord2f(coords[faces[i][2]][0] / (2*r) + 0.5, coords[faces[i][2]][1] / (2*r) + 0.5);   glVertex3f(coords[faces[i][2]][0], coords[faces[i][2]][1], coords[faces[i][2]][2]);
+            glTexCoord2f(coords[faces[i][3]][0] / (2*r) + 0.5, coords[faces[i][3]][1] / (2*r) + 0.5);    glVertex3f(coords[faces[i][3]][0], coords[faces[i][3]][1], coords[faces[i][3]][2]);
         glEnd();
     }
 }

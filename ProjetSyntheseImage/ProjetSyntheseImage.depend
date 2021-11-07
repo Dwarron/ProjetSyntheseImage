@@ -113,7 +113,7 @@
 	<jerror.h>
 	<cmath>
 
-1635186759 source:/home4/mp040309/SyntheseImage/ProjetSyntheseImage/Cylindre.cpp
+1636235872 source:/home4/mp040309/SyntheseImage/ProjetSyntheseImage/Cylindre.cpp
 	<GLUT/glut.h>
 	<GL/glut.h>
 	<cstdio>
@@ -124,7 +124,7 @@
 	<cmath>
 	"Cylindre.h"
 
-1635186759 /home4/mp040309/SyntheseImage/ProjetSyntheseImage/Cylindre.h
+1636226652 /home4/mp040309/SyntheseImage/ProjetSyntheseImage/Cylindre.h
 	<GLUT/glut.h>
 	<GL/glut.h>
 	<cstdio>
@@ -132,9 +132,8 @@
 	<GL/freeglut.h>
 	<jpeglib.h>
 	<jerror.h>
-	<cmath>
 
-1636044803 source:/home4/mp040309/SyntheseImage/ProjetSyntheseImage/projet.cpp
+1636246349 source:/home4/mp040309/SyntheseImage/ProjetSyntheseImage/projet.cpp
 	<GLUT/glut.h>
 	<GL/glut.h>
 	<cstdio>
@@ -143,10 +142,10 @@
 	<jpeglib.h>
 	<jerror.h>
 	"Texture.h"
+	"Cylindre.h"
 	"Sphere.h"
-	<cmath>
 
-1635186759 /home4/mp040309/SyntheseImage/ProjetSyntheseImage/Sphere.h
+1636241645 /home4/mp040309/SyntheseImage/ProjetSyntheseImage/Sphere.h
 	<GLUT/glut.h>
 	<GL/glut.h>
 	<cstdio>
@@ -156,7 +155,7 @@
 	<jerror.h>
 	<cmath>
 
-1635186759 source:/home4/mp040309/SyntheseImage/ProjetSyntheseImage/Sphere.cpp
+1636245733 source:/home4/mp040309/SyntheseImage/ProjetSyntheseImage/Sphere.cpp
 	<GLUT/glut.h>
 	<GL/glut.h>
 	<cstdio>
