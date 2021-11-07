@@ -28,8 +28,22 @@
 float camZoom = 20;
 float camZoomSpeed = 0.1;
 float camMoveSpeed = 0.3;
+
 char presse;
 float anglex,angley,x,y,xold,yold;
+
+GLfloat sunPos[] = {-10.0, 10.0, 10.0, 0.0};
+GLfloat sunDiffuse[] = {1, 1, 1, 1};
+GLfloat sunSpecular[] = {1, 1, 1, 1};
+GLfloat sunAmbient[] = {0, 0, 0, 1};
+
+GLfloat corpsMat[] = {0.1, 0.1, 0.1, 1};
+GLfloat teteMat[] = {0, 0, 0, 1};
+GLfloat jambesMat[] = {0.15, 0.15, 0.15, 1};
+GLfloat queueEtCouMat[] = {0.2, 0.2, 0.2, 1};
+GLfloat armatureAilesMat[] = {0.8, 0.8, 0.8, 1};
+GLfloat ailesMat[] = {0, 0, 0, 1};
+
 float mouthAngleFireBall;
 float mouthMaxAngleFireBall = 30;
 float ailesAngle = 0;
@@ -44,6 +58,7 @@ float fireBallRadius = 1;
 float avancementFireBall = 0;
 bool spawnFireBall = false;
 float speedFireBall = 0.05;
+GLfloat lightFireBallDiffuse[] = {1, 0, 0, 1};
 
 Texture customTextures[2]; //tableau de toutes les textures utilisees
 
@@ -61,195 +76,22 @@ void mouse(int bouton, int etat, int x, int y);
 void mousemotion(int x, int y);
 void zoom(int signe);
 void anim();
+void ailes();
+void tete();
+void jambes();
+void queueEtCou();
+void dragon();
+void startAnimFireBall();
 
 float largeurCorp = 4;
 float longueurCorp = 10;
 float longueurHauteurCorp = 5;
 
+float dimTete = 2;
+
 float decalageHauteurAiles = 1;
 float largeurAiles = 30;
 float longueurAiles = 10;
-
-void ailes()
-{
-    glPushMatrix();
-        glTranslatef(0, longueurHauteurCorp / 2.0 - decalageHauteurAiles, 0);
-
-        //aile droite
-        glPushMatrix();
-            glRotatef(ailesAngle, 0, 0, 1);
-            glColor3f(0, 0, 0);
-            glTranslatef(largeurCorp*0.5, 0, 0);
-
-            //partie souple
-            glBegin(GL_POLYGON);
-                glVertex3f(0, 0, 0);
-                glVertex3f(largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
-                glVertex3f(largeurAiles*3.0/5.0, 0, -longueurAiles);
-                glVertex3f(largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
-                glVertex3f(largeurAiles, 0, 0);
-            glEnd();
-
-            //armature
-            glPushMatrix();
-                glColor3f(0.2, 0.2, 0.2);
-                glTranslatef(largeurAiles * 0.25, 0, 0);
-                glScalef(largeurAiles * 0.5, 1, 1);
-                glPushMatrix();
-                    glutSolidCube(1);
-
-                    glTranslatef(1, 0, 0);
-                    glPushMatrix();
-                        glScalef(1, 0.5, 0.5);
-                        glutSolidCube(1);
-                    glPopMatrix();
-                glPopMatrix();
-
-            glPopMatrix();
-
-        glPopMatrix();
-
-        //aile gauche
-        glPushMatrix();
-            glTranslatef(-largeurCorp*0.5, 0, 0);
-            glRotatef(-ailesAngle, 0, 0, 1);
-
-            //partie souple
-            glBegin(GL_POLYGON);
-                glVertex3f(0, 0, 0);
-                glVertex3f(-largeurAiles / 4.0, 0, -longueurAiles*5.0/6.0);
-                glVertex3f(-largeurAiles*3.0/5.0, 0, -longueurAiles);
-                glVertex3f(-largeurAiles*7.0/8.0, 0, -longueurAiles*9.0/10.0);
-                glVertex3f(-largeurAiles, 0, 0);
-            glEnd();
-
-            //armature
-            glPushMatrix();
-                glColor3f(0.2, 0.2, 0.2);
-                glTranslatef(-largeurAiles * 0.25, 0, 0);
-                glScalef(largeurAiles * 0.5, 1, 1);
-                glPushMatrix();
-                    glutSolidCube(1);
-
-                    glTranslatef(-1, 0, 0);
-                    glPushMatrix();
-                        glScalef(1, 0.5, 0.5);
-                        glutSolidCube(1);
-                    glPopMatrix();
-                glPopMatrix();
-            glPopMatrix();
-
-        glPopMatrix();
-
-    glPopMatrix();
-}
-
-float dimTete = 2;
-
-void tete()
-{
-    customTextures[0].activer();    //texture tete
-
-	glPushMatrix();
-        glTranslated(0, 0, dimTete / 2.0);
-        glColor3f(0, 0, 0);
-
-        float longueurCubeTete = dimTete / 2.0;
-        //texture qui va etre appliquer sur la tete du dragon pour avoir la tete noir et les yeux violet
-        glBegin(GL_POLYGON);
-            glTexCoord2f(0.0,0.0);   glVertex3f(longueurCubeTete, longueurCubeTete, longueurCubeTete);
-            glTexCoord2f(0.0,1.0);   glVertex3f(longueurCubeTete,-longueurCubeTete, longueurCubeTete);
-            glTexCoord2f(1.0,1.0);   glVertex3f(-longueurCubeTete,-longueurCubeTete, longueurCubeTete);
-            glTexCoord2f(1.0,0.0);   glVertex3f(-longueurCubeTete, longueurCubeTete, longueurCubeTete);
-        glEnd();
-
-        //tete du dragon
-        glPushMatrix();
-            glColor3f(0,0,0);
-            glScalef(dimTete, dimTete, dimTete);
-            glutSolidCube(1);
-        glPopMatrix();
-
-        //machoire superieur
-        glPushMatrix();
-            glColor3f(0,0,0);
-            glTranslated(0, -dimTete/12.0, dimTete);
-            glScalef(dimTete/1.2, dimTete/4.0, dimTete);
-            glutSolidCube(1);
-        glPopMatrix();
-
-        //machoire inferieur
-        glPushMatrix();
-            glTranslated(0, -dimTete/3.0, dimTete/2.0);     //pivot relatif au bout de la tete
-            glRotatef(mouthAngleFireBall, 1, 0, 0);
-            glTranslated(0, dimTete/3.0, -dimTete/2.0);
-
-            glPushMatrix();
-                glColor3f(0,0,0);
-                glTranslated(0, -dimTete/3.0, dimTete - dimTete/16.0);
-                glScalef(dimTete/1.2, dimTete/4.0, dimTete + dimTete/8.0); // plus grand que la machoire superieur afin d'avoir une animation plus propre
-                glutSolidCube(1);
-            glPopMatrix();
-
-        glPopMatrix();
-
-        if(spawnFireBall)
-        {
-            glPushMatrix();
-                glTranslated(0, -dimTete/3.0, dimTete/2.0);     //pivot relatif au bout de la tete
-                glRotatef(mouthAngleFireBall / 2.0, 1, 0, 0);
-                glTranslated(0, dimTete/3.0, -dimTete/2.0);
-
-                glTranslatef(0, 0, dimTete / 2.0 + fireBallRadius);
-                glTranslatef(0, 0, avancementFireBall);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                customTextures[1].activer();
-                Sphere s(10, 10, fireBallRadius);
-                customTextures[1].desactiver();
-
-            glPopMatrix();
-        }
-
-        glPushMatrix();
-            glTranslated(0, dimTete - dimTete/3.0, 0);
-            glScalef(dimTete/8.0, dimTete/3.0, dimTete/2.0);
-            //Crete crane gauche
-            glPushMatrix();
-                glTranslated(-dimTete, 0, 0);
-                glutSolidCube(1);
-            glPopMatrix();
-        //Crete crane droite
-            glPushMatrix();
-                glTranslated(dimTete, 0, 0);
-                glutSolidCube(1);
-            glPopMatrix();
-
-        glPopMatrix();
-
-        glPushMatrix();
-            glTranslated(0, dimTete/12.0 , dimTete);
-            glScalef(dimTete/8.0, dimTete/8.0, dimTete/2.0);
-            glColor3f(1,0,0);
-
-            //Crete museau gauche
-            glPushMatrix();
-                glTranslated(-dimTete, 0, 0);
-                glutSolidCube(1);
-            glPopMatrix();
-
-            //Crete museau droite
-            glPushMatrix();
-                glTranslated(dimTete, 0, 0);
-                glutSolidCube(1);
-            glPopMatrix();
-
-        glPopMatrix();
-
-    glPopMatrix();
-    customTextures[0].desactiver();
-}
 
 float avancementJambesArrieres = 2;
 float hauteurJambesArrieres = longueurHauteurCorp / 2.0 - 1;
@@ -273,8 +115,215 @@ float largeurPiedsAvants = largeurJambesAvants;
 float longueurPiedsAvants = 2;
 float hauteurPiedsAvants = 0.75;
 
+float hauteurQueue = 0;
+float longueurQueue = 10;
+float rayonQueue = 0.75;
+float hauteurCou = 2;
+float longueurCou = 2.5;
+float rayonCou = 0.5;
+
+void ailes()
+{
+    glPushMatrix();
+        glTranslatef(0, longueurHauteurCorp / 2.0 - decalageHauteurAiles, 0);
+
+        //aile droite
+        glPushMatrix();
+            glRotatef(ailesAngle, 0, 0, 1);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, ailesMat);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ailesMat);
+            glColor3f(0, 0, 0);
+            glTranslatef(largeurCorp / 2.0, 0, 0);
+
+            //partie souple
+            glBegin(GL_POLYGON);
+                glNormal3f(0, 1, 0);
+                glVertex3f(largeurAiles, 0, 0);
+                glVertex3f(largeurAiles * 7.0 / 8.0, 0, -longueurAiles * 9.0 / 10.0);
+                glVertex3f(largeurAiles * 3.0 / 5.0, 0, -longueurAiles);
+                glVertex3f(largeurAiles / 4.0, 0, -longueurAiles * 5.0 / 6.0);
+                glVertex3f(0, 0, 0);
+            glEnd();
+
+            //armature
+            glPushMatrix();
+                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, armatureAilesMat);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, armatureAilesMat);
+                glColor3f(0.7, 0.7, 0.7);
+                glTranslatef(largeurAiles * 0.25, 0, 0);
+                glScalef(largeurAiles * 0.5, 1, 1);
+                glPushMatrix();
+                    glutSolidCube(1);
+
+                    glTranslatef(1, 0, 0);
+                    glPushMatrix();
+                        glScalef(1, 0.5, 0.5);
+                        glutSolidCube(1);
+                    glPopMatrix();
+                glPopMatrix();
+
+            glPopMatrix();
+
+        glPopMatrix();
+
+        //aile gauche
+        glPushMatrix();
+            glTranslatef(-largeurCorp * 0.5, 0, 0);
+            glRotatef(-ailesAngle, 0, 0, 1);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, ailesMat);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, ailesMat);
+            glColor3f(0, 0, 0);
+
+            //partie souple
+            glBegin(GL_POLYGON);
+                glNormal3f(0, 1, 0);
+                glVertex3f(0, 0, 0);
+                glVertex3f(-largeurAiles / 4.0, 0, -longueurAiles * 5.0 / 6.0);
+                glVertex3f(-largeurAiles * 3.0 / 5.0, 0, -longueurAiles);
+                glVertex3f(-largeurAiles * 7.0 / 8.0, 0, -longueurAiles * 9.0/10.0);
+                glVertex3f(-largeurAiles, 0, 0);
+            glEnd();
+
+            //armature
+            glPushMatrix();
+                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, armatureAilesMat);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, armatureAilesMat);
+                glColor3f(0.7, 0.7, 0.7);
+                glTranslatef(-largeurAiles * 0.25, 0, 0);
+                glScalef(largeurAiles * 0.5, 1, 1);
+                glPushMatrix();
+                    glutSolidCube(1);
+
+                    glTranslatef(-1, 0, 0);
+                    glPushMatrix();
+                        glScalef(1, 0.5, 0.5);
+                        glutSolidCube(1);
+                    glPopMatrix();
+                glPopMatrix();
+
+            glPopMatrix();
+
+        glPopMatrix();
+
+    glPopMatrix();
+}
+
+void tete()
+{
+	glPushMatrix();
+        glTranslatef(0, 0, dimTete / 2.0);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, teteMat);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, teteMat);
+        glColor3f(0, 0, 0);
+
+        float longueurCubeTete = dimTete / 2.0;
+        customTextures[0].activer();    //texture tete
+
+        //texture qui va etre appliquer sur la tete du dragon pour avoir la tete noir et les yeux violet
+        glBegin(GL_POLYGON);
+            glNormal3f(0, 0, 1);
+            glTexCoord2f(1.0, 0.0);   glVertex3f(-longueurCubeTete, longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(1.0, 1.0);   glVertex3f(-longueurCubeTete,-longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(0.0, 1.0);   glVertex3f(longueurCubeTete,-longueurCubeTete, longueurCubeTete);
+            glTexCoord2f(0.0, 0.0);   glVertex3f(longueurCubeTete, longueurCubeTete, longueurCubeTete);
+        glEnd();
+
+        customTextures[0].desactiver();
+
+        //tete du dragon
+        glPushMatrix();
+            glScalef(dimTete, dimTete, dimTete);
+            glutSolidCube(1);
+        glPopMatrix();
+
+        //machoire superieur
+        glPushMatrix();
+            glTranslatef(0, -dimTete / 12.0, dimTete);
+            glScalef(dimTete / 1.2, dimTete / 4.0, dimTete);
+            glutSolidCube(1);
+        glPopMatrix();
+
+        //machoire inferieur
+        glPushMatrix();
+            glTranslatef(0, -dimTete / 3.0, dimTete / 2.0);     //pivot relatif au bout de la tete
+            glRotatef(mouthAngleFireBall, 1, 0, 0);
+            glTranslatef(0, dimTete / 3.0, -dimTete / 2.0);
+
+            glPushMatrix();
+                glTranslatef(0, -dimTete / 3.0, dimTete - dimTete / 16.0);
+                glScalef(dimTete / 1.2, dimTete / 4.0, dimTete + dimTete / 8.0); // plus grand que la machoire superieur afin d'avoir une animation plus propre
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+        if(spawnFireBall)
+        {
+            glPushMatrix();
+                glTranslatef(0, -dimTete / 3.0, dimTete / 2.0);     //pivot relatif au bout de la tete
+                glRotatef(mouthAngleFireBall / 2.0, 1, 0, 0);
+                glTranslatef(0, dimTete / 3.0, -dimTete / 2.0);
+
+                glTranslatef(0, 0, dimTete / 2.0 + fireBallRadius);
+                glTranslatef(0, 0, avancementFireBall);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+                customTextures[1].activer();
+                Sphere s(10, 10, fireBallRadius);
+                customTextures[1].desactiver();
+                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+
+            glPopMatrix();
+        }
+
+        glPushMatrix();
+            glTranslatef(0, dimTete - dimTete / 3.0, 0);
+            glScalef(dimTete / 8.0, dimTete / 3.0, dimTete / 2.0);
+
+            //Crete crane gauche
+            glPushMatrix();
+                glTranslatef(-dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            //Crete crane droite
+            glPushMatrix();
+                glTranslatef(dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(0, dimTete / 12.0 , dimTete);
+            glScalef(dimTete / 8.0, dimTete / 8.0, dimTete / 2.0);
+
+            //Crete museau gauche
+            glPushMatrix();
+                glTranslatef(-dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
+            //Crete museau droite
+            glPushMatrix();
+                glTranslatef(dimTete, 0, 0);
+                glutSolidCube(1);
+            glPopMatrix();
+
+        glPopMatrix();
+
+    glPopMatrix();
+}
+
 void jambes()
 {
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, jambesMat);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, jambesMat);
+    glColor3f(0.15, 0.15, 0.15);
+
     //arriere
     glPushMatrix();
         glTranslatef(0, hauteurJambesArrieres, -longueurCorp / 2.0 + avancementJambesArrieres);
@@ -282,7 +331,7 @@ void jambes()
         //droite
         glPushMatrix();
             //cuisse
-            glTranslatef(largeurCorp/2.0 + largeurJambesArrieres / 2.0, -longueurCuissesArrieres/2.0, 0);
+            glTranslatef(largeurCorp / 2.0 + largeurJambesArrieres / 2.0, -longueurCuissesArrieres / 2.0, 0);
             glRotatef(angleCuissesArrieres, 1, 0, 0);
             glPushMatrix();
                 glScalef(largeurJambesArrieres, largeurJambesArrieres, longueurCuissesArrieres);
@@ -312,7 +361,7 @@ void jambes()
         //gauche
         glPushMatrix();
             //cuisse
-            glTranslatef(-largeurCorp/2.0 - largeurJambesArrieres / 2.0, -longueurCuissesArrieres/2.0, 0);
+            glTranslatef(-largeurCorp / 2.0 - largeurJambesArrieres / 2.0, -longueurCuissesArrieres / 2.0, 0);
             glRotatef(angleCuissesArrieres, 1, 0, 0);
             glPushMatrix();
                 glScalef(largeurJambesArrieres, largeurJambesArrieres, longueurCuissesArrieres);
@@ -348,7 +397,7 @@ void jambes()
         //droite
         glPushMatrix();
             //cuisse
-            glTranslatef(largeurCorp/2.0 + largeurJambesAvants / 2.0, -longueurCuissesAvants/2.0, 0);
+            glTranslatef(largeurCorp / 2.0 + largeurJambesAvants / 2.0, -longueurCuissesAvants / 2.0, 0);
             glRotatef(angleCuissesAvants, 1, 0, 0);
             glPushMatrix();
                 glScalef(largeurJambesAvants, largeurJambesAvants, longueurCuissesAvants);
@@ -378,7 +427,7 @@ void jambes()
         //gauche
         glPushMatrix();
             //cuisse
-            glTranslatef(-largeurCorp/2.0 - largeurJambesAvants / 2.0, -longueurCuissesAvants/2.0, 0);
+            glTranslatef(-largeurCorp / 2.0 - largeurJambesAvants / 2.0, -longueurCuissesAvants / 2.0, 0);
             glRotatef(angleCuissesAvants, 1, 0, 0);
             glPushMatrix();
                 glScalef(largeurJambesAvants, largeurJambesAvants, longueurCuissesAvants);
@@ -408,31 +457,26 @@ void jambes()
     glPopMatrix();
 }
 
-int divisionsQueue = 5;
-float hauteurQueue = 0;
-float longueurQueue = 10;
-float rayonQueue = 0.75;
-int divisionsCou = 5;
-float hauteurCou = 2;
-float longueurCou = 2.5;
-float rayonCou = 0.5;
-
 void queueEtCou()
 {
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, queueEtCouMat);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, queueEtCouMat);
+    glColor3f(0.2, 0.2, 0.2);
+
     //queue
     glPushMatrix();
         glRotatef(180, 0, 1, 0);
-        glTranslatef(0, hauteurQueue, longueurCorp/2.0 + longueurQueue / 2.0);
+        glTranslatef(0, hauteurQueue, longueurCorp / 2.0 + longueurQueue / 2.0);
 
-        Cylindre queue(rayonQueue, longueurQueue, 10);
+        Cylindre queue(rayonQueue, longueurQueue, 24);
 
     glPopMatrix();
 
     //cou
     glPushMatrix();
-        glTranslatef(0, hauteurCou, longueurCorp/2.0 + longueurCou / 2.0);
+        glTranslatef(0, hauteurCou, longueurCorp / 2.0 + longueurCou / 2.0);
 
-        Cylindre cou(rayonCou, longueurCou, 10);
+        Cylindre cou(rayonCou, longueurCou, 24);
 
         glTranslatef(0, 0, longueurCou / 2.0);
 
@@ -446,7 +490,9 @@ void dragon()
 
     //buste du dragon
     glPushMatrix();
-        glColor3f(1,0.8,0);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, corpsMat);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, corpsMat);
+        glColor3f(0.1, 0.1, 0.1);
         glScalef(largeurCorp, longueurHauteurCorp, longueurCorp);
         glutSolidCube(1);
     glPopMatrix();
@@ -457,11 +503,6 @@ void dragon()
 
     glPopMatrix();
 }
-
-GLfloat sunPos[] = {-5.0, 10.0, 5.0, 0.0};
-GLfloat sunDiffuse[] = {0.1, 0.1, 0.1, 1};
-GLfloat sunSpecular[] = {0.1, 0.1, 0.1, 1};
-GLfloat sunAmbient[] = {0.0, 0.0, 0.0, 1};
 
 int main(int argc,char **argv)
 {
@@ -474,15 +515,20 @@ int main(int argc,char **argv)
 
 	/* Initialisation d'OpenGL */
 	glClearColor(0.5,0.5,0.5,0.0);
-	glColor3f(1.0,1.0,1.0);
 	glPointSize(2.0);
+
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
 	glShadeModel(GL_FLAT);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, sunDiffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, sunSpecular);
     glLightfv(GL_LIGHT0, GL_AMBIENT, sunAmbient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, lightFireBallDiffuse);
+    glLighti(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0);
+    glLighti(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.75);
+    glLighti(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 1);
 
     // chargement des textures
     customTextures[0] = Texture("./Ender_dragon_skinHead.jpg");
@@ -504,14 +550,15 @@ int main(int argc,char **argv)
 	return 0;
 }
 
-GLfloat diffuseMat[] = {0.5, 0.5, 0.5, 1};
-
 void affichage()
 {
+    glMateriali(GL_FRONT_AND_BACK,GL_SHININESS,50);
+
+    	/* effacement de l'image avec la couleur de fond */
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
 
     glLightfv(GL_LIGHT0, GL_POSITION, sunPos);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
     if(touchesPressees[0])
     {
@@ -537,15 +584,11 @@ void affichage()
         angley=angley+camMoveSpeed;
     }
 
-	/* effacement de l'image avec la couleur de fond */
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     /* Parametrage du placage de textures */
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);// Comment la texture interagit avec la couleur du pixel
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);// Comment la texture interagit avec la couleur du pixel
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuseMat);
     dragon();
 
     glLoadIdentity();
@@ -567,8 +610,6 @@ void startAnimFireBall()
     startTimeAnimFireBall = glutGet(GLUT_ELAPSED_TIME);
 }
 
-GLfloat lightFireBallDiffuse[] = {1, 1, 1, 1};
-
 void anim()
 {
     if(animFireBall)
@@ -586,9 +627,7 @@ void anim()
 
             GLfloat posLightFireBall[] = {0, hauteurCou, longueurCorp / 2.0 + longueurCou + dimTete + fireBallRadius + avancementFireBall, 1};
 
-            glLightfv(GL_LIGHT1, GL_DIFFUSE, lightFireBallDiffuse);
             glLightfv(GL_LIGHT1, GL_POSITION, posLightFireBall);
-
             glEnable(GL_LIGHT1);
 
             if(animTime <= 0.67)
@@ -729,11 +768,11 @@ void mouse(int button, int state,int x,int y)
     {
     presse = 1; /* le booleen presse passe a 1 (vrai) */
     xold = x; /* on sauvegarde la position de la souris */
-    yold=y;
+    yold = y;
     }
     /* si on relache le bouton gauche */
     if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
-    presse=0; /* le booleen presse passe a 0 (faux) */
+    presse = 0; /* le booleen presse passe a 0 (faux) */
 }
 
 void mousemotion(int x,int y)

@@ -56,7 +56,15 @@ Cylindre::Cylindre(float r, float h, int subd)
 
     for(int i = 0; i < subd; i++)
     {
-        glBegin(GL_POLYGON);
+        glBegin(GL_QUADS);
+            float v1x = coords[faces[i][0]][0] - coords[faces[i][1]][0];
+            float v1y = coords[faces[i][0]][1] - coords[faces[i][1]][1];
+            float v1z = coords[faces[i][0]][2] - coords[faces[i][1]][2];
+            float v2x = coords[faces[i][1]][0] - coords[faces[i][2]][0];
+            float v2y = coords[faces[i][1]][1] - coords[faces[i][2]][1];
+            float v2z = coords[faces[i][1]][2] - coords[faces[i][2]][2];
+            glNormal3f(v1y * v2z - v2y * v1z, v2x * v1z - v1x * v2z, v1x * v2y - v2x * v1y);    //produit vectoriel pour la normale
+
             glVertex3f(coords[faces[i][0]][0], coords[faces[i][0]][1], coords[faces[i][0]][2]);
             glVertex3f(coords[faces[i][1]][0], coords[faces[i][1]][1], coords[faces[i][1]][2]);
             glVertex3f(coords[faces[i][2]][0], coords[faces[i][2]][1], coords[faces[i][2]][2]);
@@ -68,18 +76,20 @@ Cylindre::Cylindre(float r, float h, int subd)
     for(int i = 0; i < subd; i++)
     {
         glBegin(GL_POLYGON);
+            glNormal3f(0, 0, -1);
             glVertex3f(coords[i][0], coords[i][1], coords[i][2]);
             glVertex3f(0, 0, -h / 2.0);
             glVertex3f(coords[(i + 1) % subd][0], coords[(i + 1) % subd][1], coords[(i + 1) % subd][2]);
         glEnd();
     }
 
-    for(int i = subd; i < subd * 2; i++)
+    for(int i = 0; i < subd; i++)
     {
         glBegin(GL_POLYGON);
-            glVertex3f(coords[i][0], coords[i][1], coords[i][2]);
+            glNormal3f(0, 0, 1);
+            glVertex3f(coords[(i + 1) % subd + subd][0], coords[(i + 1) % subd + subd][1], coords[(i + 1) % subd + subd][2]);
             glVertex3f(0, 0, h / 2.0);
-            glVertex3f(coords[(i + 1) % subd][0], coords[(i + 1) % subd][1], coords[(i + 1) % subd][2]);
+            glVertex3f(coords[i + subd][0], coords[i + subd][1], coords[i + subd][2]);
         glEnd();
     }
 }

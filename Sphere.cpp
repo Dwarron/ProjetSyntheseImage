@@ -54,7 +54,15 @@ Sphere::Sphere(int NP, int NM, float r)
 
     for(int i = 0; i < (NP-1) * NM; i++)
     {
-        glBegin(GL_POLYGON);
+        glBegin(GL_QUADS);
+            float v1x = coords[faces[i][0]][0] - coords[faces[i][1]][0];
+            float v1y = coords[faces[i][0]][1] - coords[faces[i][1]][1];
+            float v1z = coords[faces[i][0]][2] - coords[faces[i][1]][2];
+            float v2x = coords[faces[i][1]][0] - coords[faces[i][2]][0];
+            float v2y = coords[faces[i][1]][1] - coords[faces[i][2]][1];
+            float v2z = coords[faces[i][1]][2] - coords[faces[i][2]][2];
+            glNormal3f(v1y * v2z - v2y * v1z, v2x * v1z - v1x * v2z, v1x * v2y - v2x * v1y);    //produit vectoriel pour la normale
+
             glTexCoord2f(coords[faces[i][0]][0] / (2*r) + 0.5, coords[faces[i][0]][1] / (2*r) + 0.5);   glVertex3f(coords[faces[i][0]][0], coords[faces[i][0]][1], coords[faces[i][0]][2]);
             glTexCoord2f(coords[faces[i][1]][0] / (2*r) + 0.5, coords[faces[i][1]][1] / (2*r) + 0.5);   glVertex3f(coords[faces[i][1]][0], coords[faces[i][1]][1], coords[faces[i][1]][2]);
             glTexCoord2f(coords[faces[i][2]][0] / (2*r) + 0.5, coords[faces[i][2]][1] / (2*r) + 0.5);   glVertex3f(coords[faces[i][2]][0], coords[faces[i][2]][1], coords[faces[i][2]][2]);
